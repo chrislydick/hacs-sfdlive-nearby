@@ -1,0 +1,12 @@
+{
+  "domain": "sfdlive_nearby",
+  "name": "SFD Live Nearby",
+  "codeowners": ["@chrislydick"],
+  "config_flow": true,
+  "documentation": "https://github.com/chrislydick/hacs-sfdlive-nearby",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/chrislydick/hacs-sfdlive-nearby/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

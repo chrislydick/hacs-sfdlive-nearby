@@ -1,0 +1,66 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "SFD Live Nearby",
+        "description": "Track active Seattle Fire Department incidents near a point.",
+        "data": {
+          "name": "Name",
+          "latitude": "Latitude",
+          "longitude": "Longitude",
+          "radius_mi": "Radius in miles",
+          "max_incidents": "Map markers to create",
+          "scan_interval": "Update interval in seconds"
+        }
+      }
+    },
+    "error": {
+      "positive_number": "Enter a positive number.",
+      "positive_integer": "Enter a positive whole number.",
+      "scan_interval_too_low": "Use at least 30 seconds."
+    },
+    "abort": {
+      "already_configured": "This location is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "SFD Live Nearby options",
+        "data": {
+          "radius_mi": "Radius in miles",
+          "max_incidents": "Map markers to create",
+          "scan_interval": "Update interval in seconds"
+        }
+      }
+    },
+    "error": {
+      "positive_number": "Enter a positive number.",
+      "positive_integer": "Enter a positive whole number.",
+      "scan_interval_too_low": "Use at least 30 seconds."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "active_incident_nearby": {
+        "name": "Active incident nearby"
+      }
+    },
+    "sensor": {
+      "nearby_active_incidents": {
+        "name": "Nearby active incidents"
+      },
+      "nearby_units": {
+        "name": "Nearby units"
+      },
+      "nearest_incident": {
+        "name": "Nearest incident"
+      }
+    },
+    "device_tracker": {
+      "incident": {
+        "name": "Incident {number}"
+      }
+    }
+  }
+}
