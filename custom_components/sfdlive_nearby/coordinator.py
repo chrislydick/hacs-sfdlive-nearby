@@ -57,7 +57,11 @@ class SfdLiveCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 "total_units": None,
                 "major_count": None,
                 "nearest": None,
+                "closest": None,
+                "most_recent": None,
                 "incidents": [],
+                "incidents_by_distance": [],
+                "incidents_by_recency": [],
             }
 
 

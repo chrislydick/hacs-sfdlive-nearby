@@ -69,9 +69,11 @@ class SfdLiveClient:
             if distance_mi <= self._config.radius_mi:
                 nearby.append(_clean_incident(row, distance_mi))
 
-        nearby.sort(key=lambda item: item["distance_mi"])
-        exposed = nearby[: max(self._config.max_incidents, 0)]
-        nearest = exposed[0] if exposed else None
+        nearby_by_distance = sorted(nearby, key=lambda item: item["distance_mi"])
+        nearby_by_recency = sorted(nearby, key=_incident_datetime_key, reverse=True)
+        exposed = nearby_by_distance[: max(self._config.max_incidents, 0)]
+        closest = nearby_by_distance[0] if nearby_by_distance else None
+        most_recent = nearby_by_recency[0] if nearby_by_recency else None
 
         return {
             "ok": True,
@@ -79,9 +81,14 @@ class SfdLiveClient:
             "active_count": len(nearby),
             "total_units": sum(int(item.get("total_units") or 0) for item in nearby),
             "major_count": sum(1 for item in nearby if int(item.get("total_units") or 0) >= 5),
-            "nearest": nearest,
+            "nearest": closest,
+            "closest": closest,
+            "most_recent": most_recent,
             "incidents": exposed,
+            "incidents_by_distance": exposed,
+            "incidents_by_recency": nearby_by_recency[: max(self._config.max_incidents, 0)],
             "summary": _summary(len(nearby), self._config.radius_mi),
+            "locations_summary": _locations_summary(exposed),
             "radius_mi": self._config.radius_mi,
             "home_lat": self._config.latitude,
             "home_lon": self._config.longitude,
@@ -141,6 +148,11 @@ def _split_units(units: Any) -> list[str]:
     return [unit.strip() for unit in units.split(",") if unit.strip()]
 
 
+def _incident_datetime_key(incident: dict[str, Any]) -> str:
+    value = incident.get("datetime")
+    return str(value) if value is not None else ""
+
+
 def _clean_incident(raw: dict[str, Any], distance_mi: float) -> dict[str, Any]:
     incident_id = raw.get("id")
     lat = _as_float(raw.get("latitude"))
@@ -149,6 +161,8 @@ def _clean_incident(raw: dict[str, Any], distance_mi: float) -> dict[str, Any]:
     units = _split_units(raw.get("units_dispatched"))
     total_units = int(raw.get("total_units_dispatched") or len(units) or 0)
 
+    distance_rounded = round(distance_mi, 3)
+    address = raw.get("address")
     return {
         "id": incident_id,
         "incident_number": raw.get("incident_number"),
@@ -159,13 +173,15 @@ def _clean_incident(raw: dict[str, Any], distance_mi: float) -> dict[str, Any]:
         "response_type": raw.get("response_type"),
         "response_mode": raw.get("response_mode"),
         "type_code": raw.get("type_code"),
-        "address": raw.get("address"),
+        "address": address,
         "area": raw.get("area"),
         "battalion": raw.get("battalion"),
         "datetime": raw.get("datetime"),
         "latitude": lat,
         "longitude": lon,
-        "distance_mi": round(distance_mi, 3),
+        "distance_mi": distance_rounded,
+        "location_display": _location_display(address, distance_rounded),
+        "event_display": _event_display(label, address, distance_rounded),
         "total_units": total_units,
         "units": units,
         "units_dispatched": raw.get("units_dispatched"),
@@ -183,3 +199,20 @@ def _summary(active_count: int, radius_mi: float) -> str:
         suffix = "s" if active_count != 1 else ""
         return f"{active_count} active SFD incident{suffix} within {radius_mi:g} mi"
     return f"No active SFD incidents within {radius_mi:g} mi"
+
+
+def _location_display(address: Any, distance_mi: float) -> str:
+    if address:
+        return f"{address} ({distance_mi:.2f} mi)"
+    return f"Unknown location ({distance_mi:.2f} mi)"
+
+
+def _event_display(label: str, address: Any, distance_mi: float) -> str:
+    location = _location_display(address, distance_mi)
+    return f"{label} at {location}"
+
+
+def _locations_summary(incidents: list[dict[str, Any]]) -> str:
+    if not incidents:
+        return "No active SFD incidents in range"
+    return "; ".join(str(incident.get("location_display")) for incident in incidents)

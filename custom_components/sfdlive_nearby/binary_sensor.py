@@ -50,6 +50,9 @@ class ActiveIncidentBinarySensor(SfdLiveEntity, BinarySensorEntity):
             "radius_mi": data.get("radius_mi"),
             "total_units": data.get("total_units"),
             "major_count": data.get("major_count"),
+            "locations_summary": data.get("locations_summary"),
             "nearest": data.get("nearest"),
+            "closest": data.get("closest"),
+            "most_recent": data.get("most_recent"),
             "incidents": data.get("incidents", []),
         }

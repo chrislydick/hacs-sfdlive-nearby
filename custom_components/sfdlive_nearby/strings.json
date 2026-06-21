@@ -50,13 +50,19 @@
       "nearby_active_incidents": {
         "name": "Nearby active incidents"
       },
-      "nearby_units": {
-        "name": "Nearby units"
-      },
-      "nearest_incident": {
-        "name": "Nearest incident"
-      }
-    },
+          "nearby_units": {
+            "name": "Nearby units"
+          },
+          "nearest_incident": {
+            "name": "Closest incident"
+          },
+          "most_recent_incident": {
+            "name": "Most recent incident"
+          },
+          "incident_detail": {
+            "name": "Incident {number} details"
+          }
+        },
     "device_tracker": {
       "incident": {
         "name": "Incident {number}"

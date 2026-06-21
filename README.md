@@ -9,7 +9,11 @@ The integration polls active SFD incidents, filters them around a configured poi
 - `binary_sensor.<name>_active_incident_nearby`
 - `sensor.<name>_nearby_active_incidents`
 - `sensor.<name>_nearby_units`
-- `sensor.<name>_nearest_incident`
+- `sensor.<name>_closest_incident`
+- `sensor.<name>_most_recent_incident`
+- `sensor.<name>_incident_1_details`
+- `sensor.<name>_incident_2_details`
+- `sensor.<name>_incident_3_details`
 - `device_tracker.<name>_incident_1`
 - `device_tracker.<name>_incident_2`
 - `device_tracker.<name>_incident_3`
@@ -28,7 +32,15 @@ The setup form defaults to your Home Assistant home coordinates, a `0.5` mile ra
 
 ## Dashboard
 
-Add the `device_tracker.*_incident_*` entities to a Map card. Add the binary sensor and nearest incident sensor to an Entities card.
+Add the `device_tracker.*_incident_*` entities to a Map card.
+
+For quick readouts, add these sensors to an Entities card:
+
+- Closest incident
+- Most recent incident
+- Incident 1/2/3 details
+
+The incident detail sensors are sorted by distance. Each one exposes address, distance in miles, dispatch time, unit count, units, response type, SFD Live link, and Google Maps link as attributes.
 
 ## Notes
 
