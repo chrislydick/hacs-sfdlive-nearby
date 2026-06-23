@@ -42,6 +42,15 @@ For quick readouts, add these sensors to an Entities card:
 
 The incident detail sensors are sorted by distance. Each one exposes address, distance in miles, dispatch time, unit count, units, response type, SFD Live link, and Google Maps link as attributes.
 
+Incident detail, closest, most recent, and active-alert sensors use dynamic icons based on the incident type:
+
+- Fire/alarm/smoke/burn: `mdi:fire-truck`
+- Medic/aid/ALS/BLS/injury: `mdi:ambulance`
+- Vehicle incidents: `mdi:car-emergency`
+- Rescue incidents: `mdi:lifebuoy`
+- Hazmat/gas/CO: `mdi:biohazard`
+- Police-style terms such as robbery/theft/assault: `mdi:shield-alert`
+
 ## Notes
 
 - SFD Live is unofficial and says its incident data is sourced from Seattle Open Data.

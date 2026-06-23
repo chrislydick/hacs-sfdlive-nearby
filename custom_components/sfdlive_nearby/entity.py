@@ -48,3 +48,9 @@ def incident_at(data: dict[str, Any] | None, index: int) -> dict[str, Any] | Non
     if isinstance(incidents, list) and len(incidents) > index and isinstance(incidents[index], dict):
         return incidents[index]
     return None
+
+
+def icon_for_incident(incident: dict[str, Any] | None, default: str) -> str:
+    if incident and isinstance(incident.get("icon"), str):
+        return str(incident["icon"])
+    return default

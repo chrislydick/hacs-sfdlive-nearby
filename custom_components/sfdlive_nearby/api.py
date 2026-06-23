@@ -173,6 +173,7 @@ def _clean_incident(raw: dict[str, Any], distance_mi: float) -> dict[str, Any]:
         "response_type": raw.get("response_type"),
         "response_mode": raw.get("response_mode"),
         "type_code": raw.get("type_code"),
+        "icon": _incident_icon(raw),
         "address": address,
         "area": raw.get("area"),
         "battalion": raw.get("battalion"),
@@ -199,6 +200,42 @@ def _summary(active_count: int, radius_mi: float) -> str:
         suffix = "s" if active_count != 1 else ""
         return f"{active_count} active SFD incident{suffix} within {radius_mi:g} mi"
     return f"No active SFD incidents within {radius_mi:g} mi"
+
+
+def _incident_icon(raw: dict[str, Any]) -> str:
+    response_type = str(raw.get("response_type") or "").upper()
+    type_code = str(raw.get("type_code") or "").upper()
+    original_code = str(raw.get("original_response_type_code") or "").upper()
+    text = " ".join(
+        str(raw.get(field) or "")
+        for field in (
+            "type",
+            "description",
+            "description_clean",
+            "type_clean",
+            "response_type",
+            "type_code",
+            "original_response_type_code",
+        )
+    ).lower()
+
+    if any(term in text for term in ("robbery", "burglary", "theft", "assault", "police", "weapon", "shooting")):
+        return "mdi:shield-alert"
+    if any(term in text for term in ("mvi", "motor vehicle", "collision", "crash", "vehicle")):
+        return "mdi:car-emergency"
+    if response_type == "RESCUE" or "rescue" in text or "lock in" in text or "lock out" in text:
+        return "mdi:lifebuoy"
+    if any(term in text for term in ("hazmat", "hazard", "gas", "co detector", "carbon monoxide")):
+        return "mdi:biohazard"
+    if response_type in {"MEDIC", "AID"} or type_code.startswith("MED") or type_code == "AID":
+        return "mdi:ambulance"
+    if any(term in text for term in ("medic", "medical", "aid response", "als", "bls", "injury")):
+        return "mdi:ambulance"
+    if response_type == "FIRE" or "FIRE" in {type_code, original_code}:
+        return "mdi:fire-truck"
+    if any(term in text for term in ("fire", "alarm", "smoke", "burn", "dumpster")):
+        return "mdi:fire-truck"
+    return "mdi:map-marker-alert"
 
 
 def _location_display(address: Any, distance_mi: float) -> str:

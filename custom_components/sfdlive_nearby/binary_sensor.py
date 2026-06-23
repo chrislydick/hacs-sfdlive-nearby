@@ -11,7 +11,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
 from .coordinator import SfdLiveCoordinator
-from .entity import SfdLiveEntity
+from .entity import SfdLiveEntity, icon_for_incident
 
 
 async def async_setup_entry(
@@ -56,3 +56,9 @@ class ActiveIncidentBinarySensor(SfdLiveEntity, BinarySensorEntity):
             "most_recent": data.get("most_recent"),
             "incidents": data.get("incidents", []),
         }
+
+    @property
+    def icon(self) -> str:
+        data = self.coordinator.data or {}
+        incident = data.get("closest") or data.get("most_recent")
+        return icon_for_incident(incident if isinstance(incident, dict) else None, "mdi:fire-alert")

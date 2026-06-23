@@ -11,7 +11,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import CONF_MAX_INCIDENTS, DEFAULT_MAX_INCIDENTS, DOMAIN
 from .coordinator import SfdLiveCoordinator
-from .entity import SfdLiveEntity, data_value, incident_at
+from .entity import SfdLiveEntity, data_value, icon_for_incident, incident_at
 
 
 async def async_setup_entry(
@@ -118,6 +118,11 @@ class NearestIncidentSensor(SfdLiveEntity, SensorEntity):
             return {}
         return nearest
 
+    @property
+    def icon(self) -> str:
+        nearest = data_value(self.coordinator.data, "closest") or data_value(self.coordinator.data, "nearest")
+        return icon_for_incident(nearest if isinstance(nearest, dict) else None, "mdi:map-marker-alert")
+
 
 class MostRecentIncidentSensor(SfdLiveEntity, SensorEntity):
     """Most recent active nearby incident."""
@@ -145,6 +150,11 @@ class MostRecentIncidentSensor(SfdLiveEntity, SensorEntity):
         if not isinstance(incident, dict):
             return {}
         return incident
+
+    @property
+    def icon(self) -> str:
+        incident = data_value(self.coordinator.data, "most_recent")
+        return icon_for_incident(incident if isinstance(incident, dict) else None, "mdi:clock-alert-outline")
 
 
 class IncidentDetailSensor(SfdLiveEntity, SensorEntity):
@@ -175,3 +185,7 @@ class IncidentDetailSensor(SfdLiveEntity, SensorEntity):
         if not incident:
             return {}
         return {"distance_rank": self._index + 1, **incident}
+
+    @property
+    def icon(self) -> str:
+        return icon_for_incident(incident_at(self.coordinator.data, self._index), "mdi:map-marker-distance")
